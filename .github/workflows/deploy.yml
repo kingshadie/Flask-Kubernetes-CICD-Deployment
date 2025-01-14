@@ -40,6 +40,9 @@ jobs:
 
     # Step 6: Deploy to Kubernetes
     - name: Deploy to Kubernetes
+      env:
+        KUBERNETES_SERVER: https://6814-2c0f-2a80-cb-ff10-c986-6bae-1f5e-34c.ngrok-free.app
       run: |
+        kubectl config set-cluster kind-kind --server=$KUBERNETES_SERVER
         kubectl set image deployment/flask-app-deployment simple-webapp-flask=ghcr.io/kingshadie/simple-webapp-flask:latest
         kubectl rollout status deployment/flask-app-deployment
