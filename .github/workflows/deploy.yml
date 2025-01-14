@@ -13,28 +13,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout code
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # Step 2: Log in to GHCR
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+    # Step 3: Build Docker Image
     - name: Build Docker Image
       run: |
-        docker build -t ghcr.io/${{ github.repository_owner }}/simple-webapp-flask:latest .
+        docker build -t ghcr.io/${{ github.repository_owner }}/flask-app:latest .
 
+    # Step 4: Push Docker Image
     - name: Push Docker Image
       run: |
-        docker push ghcr.io/${{ github.repository_owner }}/simple-webapp-flask:latest
+        docker push ghcr.io/${{ github.repository_owner }}/flask-app:latest
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
-
-    - name: Deploy to Kubernetes
-      env:
-        KUBECONFIG: ${{ secrets.KUBECONFIG }}
+    # Step 5: Set up kubectl
+    - name: Set up KUBECONFIG for kubectl
       run: |
-        kubectl set image deployment/flask-app-deployment simple-webapp-flask=ghcr.io/${{ github.repository_owner }}/simple-webapp-flask:latest
+        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ~/.kube/config
+
+    # Step 6: Deploy to Kubernetes
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/flask-app-deployment simple-webapp-flask=ghcr.io/kingshadie/simple-webapp-flask:latest
         kubectl rollout status deployment/flask-app-deployment
