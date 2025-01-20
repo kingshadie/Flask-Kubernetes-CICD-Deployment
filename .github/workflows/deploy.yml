@@ -38,18 +38,11 @@ jobs:
         echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ~/.kube/config
         kubectl config use-context kind-kind  # Make sure this context exists
 
-    # Step 6: Handle Ngrok Certificate
-    - name: Configure Ngrok Certificate
-      run: |
-        mkdir -p ./certs
-        echo "${{ secrets.NGROK_CERT_PEM }}" > ./certs/ngrok-cert.pem
-        export KUBECONFIG_CERT="./certs/ngrok-cert.pem"
-
-    # Step 7: Deploy to Kubernetes
+    # Step 6: Deploy to Kubernetes
     - name: Deploy to Kubernetes
       env:
         KUBERNETES_SERVER: https://37da-2c0f-2a80-cb-ff10-c986-6bae-1f5e-34c.ngrok-free.app
       run: |
-        kubectl config set-cluster kind-kind --server=$KUBERNETES_SERVER --certificate-authority=./certs/ngrok-cert.pem
-        kubectl set image deployment/flask-app-deployment simple-webapp-flask=ghcr.io/${{ github.repository_owner }}/flask-app:latest
+        kubectl config set-cluster kind-kind --server=$KUBERNETES_SERVER
+        kubectl set image deployment/flask-app-deployment simple-webapp-flask=ghcr.io/kingshadie/simple-webapp-flask:latest
         kubectl rollout status deployment/flask-app-deployment

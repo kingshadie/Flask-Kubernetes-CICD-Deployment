@@ -17,7 +17,7 @@ spec:
       containers:
       - name: simple-webapp-flask
         image: simple-webapp-flask:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         securityContext:
