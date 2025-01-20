@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: simple-webapp-flask
-        image: simple-webapp-flask:latest
+        image: ghcr.io/kingshadie/simple-webapp-flask:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -36,11 +36,13 @@ spec:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 20
         readinessProbe:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 15
+      imagePullSecrets:
+      - name: ghcr-secret
